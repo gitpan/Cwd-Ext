@@ -7,7 +7,7 @@ use Cwd;
 use vars qw(@ISA @EXPORT_OK $VERSION @EXPORT $VERSION);
 @ISA = qw/Exporter/;
 push @EXPORT_OK,  qw(abs_path_is_in abs_path_is_in_nd abs_path_nd);
-our $VERSION = sprintf "%d.%02d", q$Revision: 1.2 $ =~ /(\d+)/g;
+our $VERSION = sprintf "%d.%02d", q$Revision: 1.3 $ =~ /(\d+)/g;
 $Cwd::Ext::DEBUG =0;
 sub DEBUG : lvalue { $Cwd::Ext::DEBUG }
 
@@ -52,11 +52,11 @@ sub abs_path_nd {
 
 sub abs_path_is_in {
    my($child,$parent) = @_;
-   defined $child or croak('missing child path argument');
-   defined $parent or croak('missing parent path argument');
+   defined $child or confess('missing child path argument');
+   defined $parent or confess('missing parent path argument');
 
-   my $_child  = Cwd::abs_path($child)  or croak("cant normalize child [$child]");
-   my $_parent = Cwd::abs_path($parent) or croak("cant normalize parent [$parent]");
+   my $_child  = Cwd::abs_path($child)  or warn("cant normalize child [$child]") and return;
+   my $_parent = Cwd::abs_path($parent) or warn("cant normalize parent [$parent]") and return;
 
    
    if ($_child eq $_parent){
@@ -75,11 +75,11 @@ sub abs_path_is_in {
 
 sub abs_path_is_in_nd {
    my($child,$parent) = @_;
-   defined $child or croak('missing child path argument');
-   defined $parent or croak('missing parent path argument');
+   defined $child or confess('missing child path argument');
+   defined $parent or confess('missing parent path argument');
 
-   my $_child  = Cwd::Ext::abs_path_nd($child)  or croak("cant normalize child [$child]");
-   my $_parent = Cwd::Ext::abs_path_nd($parent) or croak("cant normalize parent [$parent]");
+   my $_child  = Cwd::Ext::abs_path_nd($child)  or warn("cant normalize child [$child]") and return;
+   my $_parent = Cwd::Ext::abs_path_nd($parent) or warn("cant normalize parent [$parent]") and return;
 
    
    if ($_child eq $_parent){
@@ -127,11 +127,13 @@ Nothing is imported by default. You must explicitely import..
 
 Works just like Cwd::abs_path , only it does (n)o (s)ymlink (d)ereference.
 
+
 =head2 abs_path_is_in()
 
 Arguments are child path in question, parent path to test against.
 Returns boolean. 
-Croaks if missing arguments.
+Will confess if missing arguments.
+If either path can't be resolved, warns and returns undef.
 
 Is /home/myself/file1.jpg inside the filesystem hierarchy of /home/myself ?
 
@@ -148,6 +150,7 @@ If both paths resolve to same place, returns 1 and warns.
 =head2 abs_path_is_in_nd()
 
 Same as abs_path_is_within() but does not resolve symlinks.
+If either path can't be resolved, warns and returns undef.
 
 =head1 CAVEATS
 
