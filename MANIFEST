@@ -1,5 +1,6 @@
 MANIFEST
 Makefile.PL
 t/0.t
+t/1.t
 lib/Cwd/Ext.pm
 META.yml                                 Module meta-data (added by MakeMaker)

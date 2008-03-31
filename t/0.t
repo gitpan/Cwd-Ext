@@ -4,9 +4,9 @@ use lib './lib';
 
 
 use warnings;
-use Cwd::Ext qw(abs_path_nd abs_path_is_in abs_path_is_in_nd);
+use Cwd::Ext ':all'; #qw(abs_path_nd abs_path_is_in abs_path_is_in_nd);
 use Cwd;
-
+#$Cwd::Ext::DEBUG = 1;
 use constant DEBUG => 1;
 
 print STDERR " - $0 started\n" if DEBUG;
@@ -43,9 +43,19 @@ ok( ! abs_path_is_in( './t/a/b', './t/a/b/c' ));
 
 
 
+mkdir cwd().'/t/Clients';
+mkdir cwd().'/t/Clients/The Heights School';
+mkdir cwd().'/t/Clients/The Heights School/Vendors';
+
+ok ( abs_path_nd('./t/Clients/The Heights School/Vendors'), 'normalized funnypath') or die("cant normalize funyn path");
+
+
 # 
 
-if (_symlinks_supported()){
+ok( abs_path_matches_into('/home/myself/childthing','/home/myself') );
+
+
+if( symlinks_supported() ){
 
    symlink( cwd().'/t/a', cwd().'/t/_a');
 
@@ -85,15 +95,6 @@ else {
 
 print STDERR " - $0 ended\n" if DEBUG;
 
-
-
-sub _symlinks_supported {
-    
-    my $symlink_exists = eval { symlink("",""); 1 };
-
-    return $symlink_exists;
-   
-}
 
 
 
